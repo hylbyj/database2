@@ -1,7 +1,7 @@
 /*@entity type
 BusinessPerson
 */
-public class BusinessPerson{
+public class BusinessPerson extends Entity{
 	private String[] LeadershipFrom;
 	private String[] Leadershipto;
 	private String[] LeadershipOrganization;
@@ -17,6 +17,9 @@ public class BusinessPerson{
 	private String[] FoundedOrganizationName;
 	
 	
+	public BusinessPerson(String mid){
+		super(mid);
+	}
 	//set the properties from json
 	
 	public void setLeadership(String[] from,String[] to,String[] organization,String[] role,String[] title){

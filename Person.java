@@ -1,7 +1,7 @@
 /*@entity type
 Person
 */
-public class Person {
+public class Person extends Entity {
 	private String Name;
 	private String Birthday;
 	private String Place_of_Birth;
@@ -11,6 +11,10 @@ public class Person {
 	private String Siblings;
 	private String Spouses;
 	private String Description;
+	
+	public Person(String mid){
+		super(mid);
+	}
     
 	public String Death(){
 		String date = this.Death_Date;
