@@ -1,13 +1,15 @@
+package dbproj2;
+
 /*@entity type
-Person
-*/
+ Person
+ */
 public class Person extends Entity {
 	private String Name;
 	private String Birthday;
 	private String Place_of_Birth;
 	private String Death_Place;
 	private String Death_Date;
-	private String Death_Cause;//not sure about if place, date, cause included in the death 
+	private String Death_Cause;//not sure about if place, date, cause included in the death
 	private String Siblings;
 	private String Spouses;
 	private String Description;
@@ -29,12 +31,24 @@ public class Person extends Entity {
 		Name = name;
 	}
 	
+	public String getName(){
+		return Name;
+	}
+	
 	public void setBirthday(String birthday){
 		Birthday = birthday;
 	}
 	
+	public String getBirthday(){
+		return Birthday;
+	}
+	
 	public void setPlaceofBirth(String place){
 		Place_of_Birth = place;
+	}
+	
+	public String getPlaceofBirth(){
+		return Place_of_Birth;
 	}
 	
 	public void setDeathPlace(String place){
@@ -53,14 +67,25 @@ public class Person extends Entity {
 		Siblings = siblings;
 	}
 	
+	public String getSiblings(){
+		return Siblings;
+	}
+	
 	public void setSpouses(String spouses){
 		Spouses = spouses;
+	}
+	
+	public String getSpouses(){
+		return Spouses;
 	}
 	
 	public void setDescription(String description){
 		Description = description;
 	}
 	
+	public String getDescription(){
+		return Description;
+	}
 	public void print(){
 		System.out.println("---------"); //still not sure about this part
 	}
