@@ -1,4 +1,3 @@
-package dbproj2;
 
 /*@entity type
  Person
