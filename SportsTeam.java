@@ -1,7 +1,7 @@
 /*@entity
 SportsTeam type
 */
-public class SportsTeam{
+public class SportsTeam extends Entity{
 	private String Name;
 	private String Description;
     private String Sport;
@@ -22,6 +22,10 @@ public class SportsTeam{
     private String [] PlayersRosterTo;
 	
 	//set the properties from Json
+    
+    public SportsTeam(String mid){
+    	super(mid);
+    }
 	
 	public void setName(String name){
 		Name = name;

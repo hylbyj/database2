@@ -1,13 +1,15 @@
 /*@entity type
 Author
 */
-public class Author {
+public class Author extends Entity{
 	private String[] Books;
 	private String[] BooksAbouttheAuthor;
 	private String[] Influenced;
 	private String[] Influencedby;
 	
-	
+	public Author(String mid){
+		super(mid);
+	}
 	//set the propoerties from json
 	
 	public void setBooks(String[] books){

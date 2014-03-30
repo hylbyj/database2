@@ -1,10 +1,12 @@
 /*@entity type
 Acthor
 */
-public class Actor{
+public class Actor extends Entity{
 	String [] FilmName;
 	String [] Character;
-	
+	public Actor(String mid){
+		super(mid);
+	}
 	//using string[] to get string[]
 	public void FilmsParticipated(String[] character,String[] filmname){
 		for (int i=0;i< character.length;i++){

@@ -1,7 +1,7 @@
 /*@entity
 League type
 */
-public class League{
+public class League extends Entity{
 	private String Name;
 	private String Championship;
 	private String Sport;
@@ -11,6 +11,10 @@ public class League{
 	private String[] Teams;
 	
 	//set the properties from Json
+	
+	public League(String mid){
+		super(mid);
+	}
 	
 	public void setName(String name){
 		Name = name;

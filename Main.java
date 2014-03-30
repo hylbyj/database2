@@ -1,5 +1,3 @@
-//package dbproj2;
-
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
@@ -13,16 +11,19 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 
-public class main {
+public class Main {
+	
 	public static void main(String[] args) {
+		
 		try {
-            
+            Entity entity = null;
 			//query (will eventually be from parameters)
 			String query = null;
 			String accountKey = null;
-			query = "Bill Gates";
+			query = "Robert Downey Jr.";
 			accountKey = "AIzaSyCIQ8gDGEMgxJpSsGK6BwkfLZXtN4MTf4E";
-            
+			
+			
 			//load and read content in search API results
 			HttpTransport httpTransport = new NetHttpTransport();
 			HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
@@ -78,20 +79,93 @@ public class main {
 				for(int k=0; k<topicList.size(); k++){
 					for(int l=0; l<freebaseTypeList.length; l++){
 						if(topicList.get(k).equals(freebaseTypeList[l])){
+							//change the type into what we need	
 							entityTypeList.add(topicList.get(k));
 						}
 					}
 					//if we found a match, break out of the loop for running the mids through the topic API
 					if(k == topicList.size()-1 && entityTypeList.size() != 0){
+						//get the mid we need for the infobox
+						
+						String mid = midList.get(i);
+						//we can use the mid here to call different entities;
+						System.out.println (mid);
+						entity = new Entity (mid);
+						if(entityTypeList.contains("/people/person")){
+							entity = new Person (mid);
+							setPersonType((Person)entity);
+							
+						}
+						
+						if(entityTypeList.contains("/book/author")){
+							entity = new Author (mid);
+							setAuthorType((Author)entity);
+							
+						}
+						
+						if(entityTypeList.contains("/film/actor") || entityTypeList.contains("/tv/tv_actor")){
+							entity = new Actor (mid);
+							setActorType((Actor)entity);
+							
+						} 
+						
+						if(entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member")){
+							entity = new BusinessPerson (mid);
+							setBusinessPersonType((BusinessPerson)entity);
+							
+						} 
+						
+						if(entityTypeList.contains("/sports/sports_league")){
+							entity = new League (mid);
+							setLeagueType((League)entity);
+							
+						}
+						
+						if(entityTypeList.contains("/sports/sports_team") || entityTypeList.contains("/sports/professional_sports_team")){
+							entity = new SportsTeam(mid);
+							setSportsTeamType((SportsTeam)entity);
+							
+						} 
 						break topicloop;
 					}
+					
 				}
 			}
+			
+			
+			
 			
 			System.out.println(entityTypeList);
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			
 		}
+		
 	}
+	//call different types of entity
+    private static void setPersonType (Person et){
+    	System.out.println("Person");
+    }
+	
+    private static void setAuthorType (Author et){
+    	System.out.println("Author");
+    }
+    
+    private static void setActorType (Actor et){
+    	System.out.println("Actor");
+    }
+    
+    private static void setBusinessPersonType (BusinessPerson et){
+    	System.out.println("BusinessPerson");
+    }
+    
+    private static void setLeagueType (League et){
+    	System.out.println("League");
+    }
+    
+    private static void setSportsTeamType (SportsTeam et){
+    	System.out.println("SportsTeam");
+    }
+	
 }
