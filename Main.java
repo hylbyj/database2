@@ -1,4 +1,3 @@
-package dbproj2;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
