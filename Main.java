@@ -1,4 +1,3 @@
-
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
@@ -148,7 +147,52 @@ public class Main {
 							if(entityTypeList.contains("/book/author")){
 								entity = new Author (mid);
 								setAuthorType((Author)entity);
+								Author author = new Author (mid);
+								//Books
+								ArrayList<String> books = new ArrayList<String>();
+								String count;
+								count = JsonPath.read(topic,"$.property['/book/author/works_written'].count").toString();
+								double numBooks = Double.valueOf(count);
+								for(int l=0; l<numBooks; l++){
+									String book = (JsonPath.read(topic,"$.property['/book/author/works_written'].values["+l+"].text").toString());
+									books.add(book);
+								}
+								String[] bookArr = new String[books.size()];
+								for(int l=0; l<bookArr.length; l++){
+									bookArr[l] = books.get(l);
+								}
+								author.setBooks(bookArr);
+								//Book about the author
+								ArrayList<String> booksAbout = new ArrayList<String>();
+								count = JsonPath.read(topic,"$.property['/book/book_subject/works'].count").toString();
+								double numBooksAbout = Double.valueOf(count);
+								for(int l=0; l<numBooksAbout; l++){
+									String book = (JsonPath.read(topic,"$.property['/book/book_subject/works'].values["+l+"].text").toString());
+									booksAbout.add(book);
+								}
+								String[] bookAboutArr = new String[booksAbout.size()];
+								for(int l=0; l<bookAboutArr.length; l++){
+									bookAboutArr[l] = booksAbout.get(l);
+								}
+								author.setBooksAbouttheAuthor(bookAboutArr);
+								//Influenced
+								ArrayList<String> influenced = new ArrayList<String>();
+								count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].count").toString();
+								double numInfluenced = Double.valueOf(count);
+								for(int l=0; l<numInfluenced; l++){
+									String influencedPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].values["+l+"].text").toString());
+									influenced.add(influencedPerson);
+								}
+								String[] influencedArr = new String[influenced.size()];
+								for(int l=0; l<influencedArr.length; l++){
+									influencedArr[l] = influenced.get(l);
+								}
+								author.setInfluenced(influencedArr);
+								//Influenced by
 
+								System.out.println("Books: "+ author.getBooks());
+								System.out.println("Books about: " + author.getBooksAbouttheAuthor());
+								System.out.println("Influenced: " + author.getInfluenced());
 							}
 
 							if(entityTypeList.contains("/film/actor") || entityTypeList.contains("/tv/tv_actor")){
