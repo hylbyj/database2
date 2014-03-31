@@ -232,11 +232,30 @@ public class Main {
 
 							}
 
-							if(entityTypeList.contains("/film/actor") || entityTypeList.contains("/tv/tv_actor")){
-								entity = new Actor (mid);
-								setActorType((Actor)entity);
-
-							} 
+							if(JsonPath.read(topic, "$").toString().contains("film")){
+									ArrayList<String> films = new ArrayList<String>();
+									ArrayList<String> characters = new ArrayList<String>();
+									String count = JsonPath.read(topic,"$.property['/film/actor/film'].count").toString();
+									double numFilms = Double.valueOf(count);
+									if(numFilms>10){
+										numFilms=10;
+									}
+									for(int l=0; l<numFilms; l++){
+										String film = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/film'].values[0].text").toString());
+										String character = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/character'].values[0].text").toString());
+										films.add(film);
+										characters.add(character);
+									}
+									String[] filmArr = new String[films.size()];
+									String[] charArr = new String[characters.size()];
+									for(int l=0; l<filmArr.length; l++){
+										filmArr[l] = films.get(l);
+										charArr[l] = characters.get(l);
+									}
+									actor.setFilmsParticipated(charArr, filmArr);
+									System.out.println("Films: "+actor.getFilmsParticipated());
+								}								
+							}  
 
 							if(entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member")){
 								entity = new BusinessPerson (mid);
