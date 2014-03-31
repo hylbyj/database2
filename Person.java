@@ -1,5 +1,3 @@
-package dbproj2;
-
 /*@entity type
  Person
  */
@@ -22,7 +20,7 @@ public class Person extends Entity {
 		String date = this.Death_Date;
 		String place = this.Death_Place;
 		String cause = this.Death_Cause;
-		return date+" at "+ place + ", cause: ("+ cause +")";
+		return date+" at "+ place + ", cause: "+ cause;
 	}
 	
 	//get the propoerties from json
