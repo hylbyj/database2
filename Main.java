@@ -163,6 +163,9 @@ public class Main {
 								String count;
 								count = JsonPath.read(topic,"$.property['/book/author/works_written'].count").toString();
 								double numBooks = Double.valueOf(count);
+								if(numBooks>10){
+									numBooks = 10;
+								}
 								for(int l=0; l<numBooks; l++){
 									String book = (JsonPath.read(topic,"$.property['/book/author/works_written'].values["+l+"].text").toString());
 									books.add(book);
@@ -172,10 +175,14 @@ public class Main {
 									bookArr[l] = books.get(l);
 								}
 								author.setBooks(bookArr);
+								System.out.println("Books: "+ author.getBooks());
 								//Book about the author
 								ArrayList<String> booksAbout = new ArrayList<String>();
 								count = JsonPath.read(topic,"$.property['/book/book_subject/works'].count").toString();
 								double numBooksAbout = Double.valueOf(count);
+								if(numBooksAbout>10){
+									numBooksAbout=10;
+								}
 								for(int l=0; l<numBooksAbout; l++){
 									String book = (JsonPath.read(topic,"$.property['/book/book_subject/works'].values["+l+"].text").toString());
 									booksAbout.add(book);
@@ -185,10 +192,14 @@ public class Main {
 									bookAboutArr[l] = booksAbout.get(l);
 								}
 								author.setBooksAbouttheAuthor(bookAboutArr);
+								System.out.println("Books about: " + author.getBooksAbouttheAuthor());
 								//Influenced
 								ArrayList<String> influenced = new ArrayList<String>();
 								count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].count").toString();
 								double numInfluenced = Double.valueOf(count);
+								if(numInfluenced>10){
+									numInfluenced=10;
+								}
 								for(int l=0; l<numInfluenced; l++){
 									String influencedPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].values["+l+"].text").toString());
 									influenced.add(influencedPerson);
@@ -198,11 +209,27 @@ public class Main {
 									influencedArr[l] = influenced.get(l);
 								}
 								author.setInfluenced(influencedArr);
-								//Influenced by
-
-								System.out.println("Books: "+ author.getBooks());
-								System.out.println("Books about: " + author.getBooksAbouttheAuthor());
 								System.out.println("Influenced: " + author.getInfluenced());
+								//Influenced by
+								if(JsonPath.read(topic, "$").toString().contains("influenced_by")){
+									ArrayList<String> influencedby = new ArrayList<String>();
+									count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced_by'].count").toString();
+									double numInfluencedBy = Double.valueOf(count);
+									if(numInfluencedBy>10){
+										numInfluencedBy=10;
+									}
+									for(int l=0; l<numInfluencedBy; l++){
+										String influencedByPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced_by'].values["+l+"].text").toString());
+										influencedby.add(influencedByPerson);
+									}
+									String[] influencedbyArr = new String[influencedby.size()];
+									for(int l=0; l<influencedbyArr.length; l++){
+										influencedbyArr[l] = influencedby.get(l);
+									}
+									author.setInfluencedby(influencedbyArr);
+									System.out.println("Influenced By: "+author.getInfluencedby());
+								}
+
 							}
 
 							if(entityTypeList.contains("/film/actor") || entityTypeList.contains("/tv/tv_actor")){
