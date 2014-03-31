@@ -31,25 +31,46 @@ public class SportsTeam extends Entity{
 		Name = name;
 	}
 	
+	public String getName(){
+		return Name;
+	}
+	
 	public void setDescription(String description){
 		Description= description;
+	}
+	
+	public String getDescription(){
+		return Description;
 	}
 	
 	public void setSport(String sport){
 		Sport= sport;
 	}
 	
+	public String getSport(){
+		return Sport;
+	}
+	
 	public void setArena(String arena){
 		Arena= arena;
 	}
 	
+	public String getArena(){
+		return Arena;
+	}
+	
 	public void setChampionships(String[] championships){
+		Championships = new String[championships.length];
 		for (int i = 0; i< championships.length;i++){
 			Championships [i]= championships [i];
 		}
 	}
 	
 	public void setCoaches(String[] name,String[] position,String[] from,String[] to){
+		CoachesName = new String[name.length];
+		CoachesPosition = new String[name.length];
+		CoachesFrom = new String[name.length];
+		CoachesTo = new String[name.length];		
 		for (int i=0;i< name.length;i++){
 			CoachesName[i] = name [i];
 			CoachesPosition[i] = position [i];
@@ -62,15 +83,32 @@ public class SportsTeam extends Entity{
 		Founded = founded;
 	}
 	
+	public String getFounded(){
+		return Founded;
+	}
+	
 	public void setLeagues(String leagues){
 		Leagues = leagues;
+	}
+	
+	public String getLeagues(){
+		return Leagues;
 	}
 	
 	public void setLocations(String locations){
 		Locations = locations;
 	}
 	
+	public String getLocations(){
+		return Locations;
+	}
+	
 	public void setPlayersRoster(String[] name,String[] position,String [] number,String[] from,String[] to){
+		PlayersRosterName = new String[name.length];
+		PlayersRosterPosition = new String[name.length];
+		PlayersRosterNumber = new String[name.length];
+		PlayersRosterFrom = new String[name.length];
+		PlayersRosterTo = new String[name.length];		
 		for (int i=0;i< name.length;i++){
 			PlayersRosterName[i] = name [i];
 			PlayersRosterPosition[i] = position [i];
