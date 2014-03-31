@@ -385,7 +385,47 @@ public class Main {
 							if(entityTypeList.contains("/sports/sports_league")){
 								entity = new League (mid);
 								setLeagueType((League)entity);
-
+								League league = new League (mid);
+								//name
+								league.setName(name);
+								System.out.println("Name: " + league.getName());
+								//sport
+								league.setSport(JsonPath.read(topic,"$.property['/sports/sports_league/sport'].values[0].text").toString());
+								System.out.println("Sport: "+league.getSport());
+								//slogan
+								if(JsonPath.read(topic,"$").toString().contains("slogan")){
+									league.setSlogan(JsonPath.read(topic,"$.property['/organization/organization/slogan'].values[0].text").toString());
+									System.out.println("Slogan: "+league.getSlogan());
+								}
+								//Official website
+								league.setOfficialWebsite(JsonPath.read(topic,"$.property['/common/topic/official_website'].values[0].text").toString());
+								System.out.println("Official website: "+league.getOfficialWebsite());
+								//championship
+								league.setChampionship(JsonPath.read(topic,"$.property['/sports/sports_league/championship'].values[0].text").toString());
+								System.out.println("Championship: "+league.getChampionship());
+								//teams
+								ArrayList<String> teams = new ArrayList<String>();
+								String count = JsonPath.read(topic,"$.property['/sports/sports_league/teams'].count").toString();
+								double numTeams = Double.valueOf(count);
+								if(numTeams>10){
+									numTeams=10;
+								}
+								for(int l=0; l<numTeams; l++){
+									String team = (JsonPath.read(topic,"$.property['/sports/sports_league/teams'].values["+l+"].property['/sports/sports_league_participation/team'].values[0].text").toString());
+									teams.add(team);
+								}
+								String[] teamsArr = new String[teams.size()];
+								for(int l=0; l<teamsArr.length; l++){
+									teamsArr[l] = teams.get(l);
+								}
+								league.setTeams(teamsArr);
+								System.out.println("Teams:");
+								for(String str : teamsArr){
+									System.out.println(str);
+								}
+								//description
+								league.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
+								System.out.println("Description: "+league.getDescription());
 							}
 
 							if(entityTypeList.contains("/sports/sports_team") || entityTypeList.contains("/sports/professional_sports_team")){
