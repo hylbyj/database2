@@ -260,8 +260,127 @@ public class Main {
 							if(entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member")){
 								entity = new BusinessPerson (mid);
 								setBusinessPersonType((BusinessPerson)entity);
-
-							} 
+								BusinessPerson businessperson = new BusinessPerson (mid);
+								//founder
+								if(JsonPath.read(topic, "$").toString().contains("organizations_founded")){
+									ArrayList<String> founded = new ArrayList<String>();
+									String count = JsonPath.read(topic,"$.property['/organization/organization_founder/organizations_founded'].count").toString();
+									double numOrgFounded = Double.valueOf(count);
+									if(numOrgFounded>10){
+										numOrgFounded=10;
+									}
+									for(int l=0; l<numOrgFounded; l++){
+										String org = (JsonPath.read(topic,"$.property['/organization/organization_founder/organizations_founded'].values["+l+"].text").toString());
+										founded.add(org);
+									}
+									String[] foundedArr = new String[founded.size()];
+									for(int l=0; l<foundedArr.length; l++){
+										foundedArr[l] = founded.get(l);
+									}
+									businessperson.setFoundedOrganizationName(foundedArr);
+									System.out.println("Founded:");
+									for(String str : foundedArr){
+										System.out.println(str);
+									}
+								}
+								//leadership
+								if(JsonPath.read(topic, "$").toString().contains("leader_of")){
+									ArrayList<String> leadershipFrom = new ArrayList<String>();
+									ArrayList<String> leadershipTo = new ArrayList<String>();
+									ArrayList<String> leadershipOrganization = new ArrayList<String>();
+									ArrayList<String> leadershipRole = new ArrayList<String>();
+									ArrayList<String> leadershipTitle = new ArrayList<String>();
+									String count = JsonPath.read(topic,"$.property['/business/board_member/leader_of'].count").toString();
+									double numLeadership = Double.valueOf(count);
+									for(int l=0; l<numLeadership; l++){
+										String leadFrom = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/from'].values[0].text").toString());
+										leadershipFrom.add(leadFrom);
+										String leadTo = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/to'].values[0].text").toString());
+										leadershipTo.add(leadTo);
+										String leadOrg = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/organization'].values[0].text").toString());
+										leadershipOrganization.add(leadOrg);
+										String leadRole = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/role'].values[0].text").toString());
+										leadershipRole.add(leadRole);
+										String leadTitle = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/title'].values[0].text").toString());
+										leadershipTitle.add(leadTitle);
+									}
+									String[] leadFromArr = new String[leadershipFrom.size()];
+									String[] leadToArr = new String[leadershipTo.size()];
+									String[] leadOrgArr = new String[leadershipOrganization.size()];
+									String[] leadRoleArr = new String[leadershipRole.size()];
+									String[] leadTitleArr = new String[leadershipTitle.size()];
+									for(int l=0; l<leadFromArr.length; l++){
+										leadFromArr[l] = leadershipFrom.get(l);
+										leadToArr[l] = leadershipTo.get(l);
+										leadOrgArr[l] = leadershipOrganization.get(l);
+										leadRoleArr[l] = leadershipRole.get(l);
+										leadTitleArr[l] = leadershipTitle.get(l);
+									}
+									businessperson.setLeadership(leadFromArr, leadToArr, leadOrgArr, leadRoleArr, leadTitleArr);
+									System.out.println("Leadership:\nOrganization/Role/Title/From-To");
+									for(int l=0; l<leadFromArr.length; l++){
+										System.out.println(leadOrgArr[l]+"/"+leadRoleArr[l]+"/"+leadTitleArr[l]+"/"+leadFromArr[l]+" to "+leadToArr[l]);
+									}
+								}
+								//board member
+								if(JsonPath.read(topic, "$").toString().contains("board_memberships")){
+									ArrayList<String> boardFrom = new ArrayList<String>();
+									ArrayList<String> boardTo = new ArrayList<String>();
+									ArrayList<String> boardOrganization = new ArrayList<String>();
+									ArrayList<String> boardRole = new ArrayList<String>();
+									ArrayList<String> boardTitle = new ArrayList<String>();
+									String count = JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].count").toString();
+									double numMemberships = Double.valueOf(count);
+									for(int l=0; l<numMemberships; l++){
+										if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("from")){
+											String bmFrom = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/from'].values[0].text").toString());
+											boardFrom.add(bmFrom);
+										}else{
+											boardFrom.add(" ");
+										}
+										//System.out.println(JsonPath.read(topic,"$").toString());
+										if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("board_membership\\/to")){
+											String bmTo = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/to'].values[0].text").toString());
+											boardTo.add(bmTo);
+										}else if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("from")){
+											boardTo.add("now");
+										}else{
+											boardTo.add(" ");
+										}
+										String bmOrg = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/organization'].values[0].text").toString());
+										boardOrganization.add(bmOrg);
+										if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("role")){
+											String bmRole = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/role'].values[0].text").toString());
+											boardRole.add(bmRole);
+										}else{
+											boardRole.add(" ");
+										}
+										if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("board_membership\\/title")){
+											String bmTitle = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/title'].values[0].text").toString());
+											boardTitle.add(bmTitle);
+										}else{
+											boardTitle.add(" ");
+										}
+									}
+									String[] bmFromArr = new String[boardFrom.size()];
+									String[] bmToArr = new String[boardTo.size()];
+									String[] bmOrgArr = new String[boardOrganization.size()];
+									String[] bmRoleArr = new String[boardRole.size()];
+									String[] bmTitleArr = new String[boardTitle.size()];
+									for(int l=0; l<bmFromArr.length; l++){
+										bmFromArr[l] = boardFrom.get(l);
+										bmToArr[l] = boardTo.get(l);
+										bmOrgArr[l] = boardOrganization.get(l);
+										bmRoleArr[l] = boardRole.get(l);
+										bmTitleArr[l] = boardTitle.get(l);
+									}
+									businessperson.setLeadership(bmFromArr, bmToArr, bmOrgArr, bmRoleArr, bmTitleArr);
+									System.out.println("Board Membership:\nOrganization/Role/Title/From-To");
+									for(int l=0; l<bmOrgArr.length; l++){
+										System.out.println(bmOrgArr[l]+"/"+bmRoleArr[l]+"/"+bmTitleArr[l]+"/"+bmFromArr[l]+" to "+bmToArr[l]);
+									}
+								}
+							}
 
 							if(entityTypeList.contains("/sports/sports_league")){
 								entity = new League (mid);
