@@ -101,12 +101,26 @@ public class Main {
 								Person person = new Person (mid);
 								//name
 								person.setName(name);
+								System.out.println("Name: " + person.getName());
 								//birthday
 								person.setBirthday(JsonPath.read(topic,"$.property['/people/person/date_of_birth'].values[0].text").toString());
+								System.out.println("Date of Birth: "+person.getBirthday());
 								//place of birth
 								person.setPlaceofBirth(JsonPath.read(topic,"$.property['/people/person/place_of_birth'].values[0].text").toString());
+								System.out.println("Place of Birth: "+person.getPlaceofBirth());
 								//death
-								//code here...
+								if(JsonPath.read(topic, "$").toString().contains("deceased_person")){
+									String count = JsonPath.read(topic,"$.property['/people/deceased_person/cause_of_death'].count").toString();
+									double numCount = Double.valueOf(count);
+									if(numCount >= 1){
+										person.setDeathCause(JsonPath.read(topic,"$.property['/people/deceased_person/cause_of_death'].values[0].text").toString());
+									}else{
+										person.setDeathCause("unknown");
+									}							
+									person.setDeathDate(JsonPath.read(topic,"$.property['/people/deceased_person/date_of_death'].values[0].text").toString());
+									person.setDeathPlace(JsonPath.read(topic,"$.property['/people/deceased_person/place_of_death'].values[0].text").toString());
+									System.out.println("Death: "+person.Death());
+								}
 								//siblings
 								String siblings = "";
 								String count = JsonPath.read(topic,"$.property['/people/person/sibling_s'].count").toString();
@@ -120,6 +134,7 @@ public class Main {
 									}
 								}
 								person.setSiblings(siblings);
+								System.out.println("Sibling(s): " + person.getSiblings());
 								//spouses
 								String spouses = "";
 								count = JsonPath.read(topic,"$.property['/people/person/spouse_s'].count").toString();
@@ -133,14 +148,9 @@ public class Main {
 									}
 								}
 								person.setSpouses(spouses);
+								System.out.println("Spouse(s): " + person.getSpouses());
 								//description
 								person.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
-
-								System.out.println("Name: " + person.getName());
-								System.out.println("Date of Birth: "+person.getBirthday());
-								System.out.println("Place of Birth: "+person.getPlaceofBirth());
-								System.out.println("Sibling(s): " + person.getSiblings());
-								System.out.println("Spouse(s): " + person.getSpouses());
 								System.out.println("Description: " + person.getDescription());
 							}
 
