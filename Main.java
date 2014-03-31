@@ -431,8 +431,172 @@ public class Main {
 							if(entityTypeList.contains("/sports/sports_team") || entityTypeList.contains("/sports/professional_sports_team")){
 								entity = new SportsTeam(mid);
 								setSportsTeamType((SportsTeam)entity);
-
-							} 
+								SportsTeam sportsteam = new SportsTeam (mid);
+								//Name
+								sportsteam.setName(name);
+								System.out.println("Name: " + sportsteam.getName());
+								//Sport
+								sportsteam.setSport(JsonPath.read(topic,"$.property['/sports/sports_team/sport'].values[0].text").toString());
+								System.out.println("Sport: "+sportsteam.getSport());
+								//Arena
+								sportsteam.setArena(JsonPath.read(topic,"$.property['/sports/sports_team/arena_stadium'].values[0].text").toString());
+								System.out.println("Arena: "+sportsteam.getArena());
+								//Championships
+								ArrayList<String> champs = new ArrayList<String>();
+								String count = JsonPath.read(topic,"$.property['/sports/sports_team/championships'].count").toString();
+								double numChamps = Double.valueOf(count);
+								if(numChamps>10){
+									numChamps=10;
+								}
+								for(int l=0; l<numChamps; l++){
+									String champ = (JsonPath.read(topic,"$.property['/sports/sports_team/championships'].values["+l+"].text").toString());
+									champs.add(champ);
+								}
+								String[] champsArr = new String[champs.size()];
+								for(int l=0; l<champsArr.length; l++){
+									champsArr[l] = champs.get(l);
+								}
+								sportsteam.setChampionships(champsArr);
+								System.out.println("Championships:");
+								for(String str : champsArr){
+									System.out.println(str);
+								}
+								//Founded
+								sportsteam.setFounded(JsonPath.read(topic,"$.property['/sports/sports_team/founded'].values[0].text").toString());
+								System.out.println("Founded: "+sportsteam.getFounded());
+								//Leagues
+								sportsteam.setLeagues(JsonPath.read(topic,"$.property['/sports/sports_team/league'].values[0].property['/sports/sports_league_participation/league'].values[0].text").toString());
+								System.out.println("Leagues: "+sportsteam.getLeagues());
+								//Location
+								sportsteam.setLocations(JsonPath.read(topic,"$.property['/sports/sports_team/location'].values[0].text").toString());
+								System.out.println("Locations: "+sportsteam.getLocations());
+								//Coaches
+								ArrayList<String> coachFrom = new ArrayList<String>();
+								ArrayList<String> coachTo = new ArrayList<String>();
+								ArrayList<String> coachName = new ArrayList<String>();
+								ArrayList<String> coachPos = new ArrayList<String>();
+								count = JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].count").toString();
+								double numCoaches = Double.valueOf(count);
+								for(int l=0; l<numCoaches; l++){
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"]").toString().contains("from")){
+										String coFrom = (JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/from'].values[0].text").toString());
+										coachFrom.add(coFrom);
+									}else{
+										coachFrom.add(" ");
+									}
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"]").toString().contains("coach_tenure\\/to") && 
+											JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/to'].values").toString().contains("text")){
+										String coTo = (JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/to'].values[0].text").toString());
+										coachTo.add(coTo);
+									}else if(JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"]").toString().contains("from")){
+										coachTo.add("now");
+									}else{
+										coachTo.add(" ");
+									}
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"]").toString().contains("position")){
+										String posCount = JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/position'].count").toString();
+										double posNum = Double.valueOf(posCount);
+										String posStr = "";
+										for(int m =0; m<posNum; m++){
+											String coPos = (JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/position'].values["+m+"].text").toString());
+											if (m==0)
+												posStr = posStr+coPos;
+											else
+												posStr = posStr+", "+coPos;
+										}
+										coachPos.add(posStr);
+									}else{
+										coachPos.add(" ");
+									}
+									String coName = (JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/coach'].values[0].text").toString());
+									coachName.add(coName);
+								}
+								String[] cfromArr = new String[coachFrom.size()];
+								String[] ctoArr = new String[coachTo.size()];
+								String[] cposArr = new String[coachPos.size()];
+								String[] cnameArr = new String[coachName.size()];
+								for(int l=0; l<cfromArr.length; l++){
+									cfromArr[l] = coachFrom.get(l);
+									ctoArr[l] = coachTo.get(l);
+									cposArr[l] = coachPos.get(l);
+									cnameArr[l] = coachName.get(l);
+								}
+								sportsteam.setCoaches(cnameArr, cposArr, cfromArr, ctoArr);
+								System.out.println("Coaches:\nName/Position/From-To");
+								for(int l=0; l<cnameArr.length; l++){
+									System.out.println(cnameArr[l]+"/"+cposArr[l]+"/"+cfromArr[l]+"-"+ctoArr[l]);
+								}
+								//Player roster
+								ArrayList<String> playerFrom = new ArrayList<String>();
+								ArrayList<String> playerTo = new ArrayList<String>();
+								ArrayList<String> playerName = new ArrayList<String>();
+								ArrayList<String> playerPos = new ArrayList<String>();
+								ArrayList<String> playerNum = new ArrayList<String>();
+								count = JsonPath.read(topic,"$.property['/sports/sports_team/roster'].count").toString();
+								double numPlayers = Double.valueOf(count);
+								if(numPlayers>10){
+									numPlayers=10;
+								}
+								for(int l=0; l<numPlayers; l++){
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"]").toString().contains("from")){
+										String playFrom = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/from'].values[0].text").toString());
+										playerFrom.add(playFrom);
+									}else{
+										playerFrom.add(" ");
+									}
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"]").toString().contains("team_roster\\/to")){
+										String playTo = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/to'].values[0].text").toString());
+										playerTo.add(playTo);
+									}else if(JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"]").toString().contains("from")){
+										playerTo.add("now");
+									}else{
+										playerTo.add(" ");
+									}
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"]").toString().contains("number")){
+										String playNum = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/number'].values[0].text").toString());
+										playerNum.add(playNum);
+									}else{
+										playerNum.add(" ");
+									}
+									if(JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"]").toString().contains("position")){
+										String posCount = JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/position'].count").toString();
+										double posNum = Double.valueOf(posCount);
+										String posStr = "";
+										for(int m =0; m<posNum; m++){
+											String playPos = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/position'].values["+m+"].text").toString());
+											if (m==0)
+												posStr = posStr+playPos;
+											else
+												posStr = posStr+", "+playPos;
+										}
+										playerPos.add(posStr);
+									}else{
+										playerPos.add(" ");
+									}
+									String playName = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/player'].values[0].text").toString());
+									playerName.add(playName);
+								}
+								String[] fromArr = new String[playerFrom.size()];
+								String[] toArr = new String[playerTo.size()];
+								String[] numArr = new String[playerNum.size()];
+								String[] posArr = new String[playerPos.size()];
+								String[] nameArr = new String[playerName.size()];
+								for(int l=0; l<fromArr.length; l++){
+									fromArr[l] = playerFrom.get(l);
+									toArr[l] = playerTo.get(l);
+									numArr[l] = playerNum.get(l);
+									posArr[l] = playerPos.get(l);
+									nameArr[l] = playerName.get(l);
+								}
+								sportsteam.setPlayersRoster(nameArr, posArr, numArr, fromArr, toArr);
+								System.out.println("PlayersRoster:\nName/Position/Number/From-To");
+								for(int l=0; l<nameArr.length; l++){
+									System.out.println(nameArr[l]+"/"+posArr[l]+"/"+numArr[l]+"/"+fromArr[l]+" to "+toArr[l]);
+								}							
+								//Description
+								sportsteam.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
+								System.out.println("Description: "+sportsteam.getDescription());
+							}
 							break topicloop;
 						}
 
