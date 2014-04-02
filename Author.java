@@ -35,7 +35,7 @@ public class Author extends Entity{
 	public void setBooksAbouttheAuthor(String[] aboutauthor){
 		BooksAbouttheAuthor = new String[aboutauthor.length];
 		for (int i=0;i< aboutauthor.length;i++){
-			BooksAbouttheAuthor[i] = aboutauthor [i];
+			BooksAbouttheAuthor[i] = aboutauthor[i];
 		}
 	}
 	
@@ -43,9 +43,9 @@ public class Author extends Entity{
 		String bookList = "";
 		for(int i=0;i<BooksAbouttheAuthor.length;i++){
 			if(i==BooksAbouttheAuthor.length-1){
-				bookList=bookList+Books[i];
+				bookList=bookList+BooksAbouttheAuthor[i];
 			}else{
-				bookList=bookList+Books[i]+"\n";
+				bookList=bookList+BooksAbouttheAuthor[i]+"\n";
 			}
 		}
 		return bookList;
@@ -90,7 +90,85 @@ public class Author extends Entity{
 	}
 	
 	public void print(){
-		System.out.println("---------"); //still not sure about this part
+		//print books
+		if (!(Books[0]== null)){
+	        String Rowname0 = FlushLeft(20,"Books:");
+	        System.out.printf("|" + Rowname0);
+	        for (int leng = 0;leng< Books.length;leng++){
+	        	String books = FlushLeft(78,Books[leng]);
+	            System.out.printf(books+"|");
+	            System.out.println();
+	            String Rowname1 = FlushLeft(20,"");
+	            System.out.printf("|" + Rowname1);
+	        }
+	        String space = FlushLeft(78,"");
+	        System.out.printf(space + "|");
+	        System.out.println();
+	        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+	        }
+		//print booksabout
+		if (!(BooksAbouttheAuthor[0]== null)){
+	        String Rowname0 = FlushLeft(20,"Books About:");
+	        System.out.printf("|" + Rowname0);
+	        for (int leng = 0;leng< BooksAbouttheAuthor.length;leng++){
+	        	String booksabout = FlushLeft(78,BooksAbouttheAuthor[leng]);
+	            System.out.printf(booksabout+"|");
+	            System.out.println();
+	            String Rowname1 = FlushLeft(20,"");
+	            System.out.printf("|" + Rowname1);
+	        }
+	        String space = FlushLeft(78,"");
+	        System.out.printf(space + "|");
+	        System.out.println();
+	        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+	        }
+		//print influenced
+		if (!(Influenced[0]== null)){
+	        String Rowname0 = FlushLeft(20,"Influenced:");
+	        System.out.printf("|" + Rowname0);
+	        for (int leng = 0;leng< Influenced.length;leng++){
+	        	String influenced = FlushLeft(78,Influenced[leng]);
+	            System.out.printf(influenced+"|");
+	            System.out.println();
+	            String Rowname1 = FlushLeft(20,"");
+	            System.out.printf("|" + Rowname1);
+	        }
+	        String space = FlushLeft(78,"");
+	        System.out.printf(space + "|");
+	        System.out.println();
+	        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+	        }
+		//Influencedby
+		//System.out.println("wtf is the influenced by" + Influencedby[0])  ;
+		if (Influencedby[0] != ""){
+	        String Rowname0 = FlushLeft(20,"Influenced by:");
+	        System.out.printf("|" + Rowname0);
+	        for (int leng = 0;leng< Influencedby.length;leng++){
+	        	String influencedby = FlushLeft(78,Influencedby[leng]);
+	            System.out.printf(influencedby+"|");
+	            System.out.println();
+	            String Rowname1 = FlushLeft(20,"");
+	            System.out.printf("|" + Rowname1);
+	        }
+	        String space = FlushLeft(78,"");
+	        System.out.printf(space + "|");
+	        System.out.println();
+	        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+	        }
+		
+		
+		//System.out.println("---------"); //still not sure about this part
 	}
+	public static String FlushLeft(int length, String string)   
+    {   
+        String str = string;   
+        String c = " ";
+        if (string.length() > length)   
+            str = string.substring(0,length);   
+        else  
+            for (int i = 0; i < length - string.length(); i++)      
+        str = str + c;   
+        return str;   
+    } 
 	
 }

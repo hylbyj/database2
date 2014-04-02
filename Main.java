@@ -5,6 +5,7 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.jayway.jsonpath.JsonPath;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +21,7 @@ public class Main {
 			//query (will eventually be from parameters)
 			String query = null;
 			String accountKey = null;
-			query = "Bill Gates";
+			query = "Jackson";
 			accountKey = "AIzaSyCIQ8gDGEMgxJpSsGK6BwkfLZXtN4MTf4E";
 
 
@@ -71,10 +72,13 @@ public class Main {
 
 					ArrayList<String> topicList = new ArrayList<String>();
 
-					//return first 10 freebase type results
-					for(int j=0; j<10; j++){
+					//return freebase type results
+					String countTypes = JsonPath.read(topic,"$.property['/type/object/type'].count").toString();
+					double numTypes = Double.valueOf(countTypes);
+					for(int j=0; j<numTypes; j++){
 						topicList.add(JsonPath.read(topic,"$.property['/type/object/type'].values["+j+"].id").toString());
 					}
+
 
 					//System.out.println(topicList);
 
@@ -93,7 +97,7 @@ public class Main {
 							String mid = midList.get(i);
 							String name = nameList.get(i);
 							//we can use the mid here to call different entities;
-							System.out.println ("Mid: "+mid);
+							//System.out.println ("Mid: "+mid);
 							entity = new Entity (mid);
 							if(entityTypeList.contains("/people/person")){
 								entity = new Person (mid);
@@ -101,13 +105,39 @@ public class Main {
 								Person person = new Person (mid);
 								//name
 								person.setName(name);
-								System.out.println("Name: " + person.getName());
+								//we print the name of the person here
+								System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+								
+								String namespace = FlushLeft(40,"");
+								System.out.printf( "|" + namespace );
+								if (entityTypeList.contains("/book/author") || entityTypeList.contains("/film/actor") || entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member") ){
+									name = name +"(";
+									if (entityTypeList.contains("/book/author")){
+										name = name +"AUTHOR ";
+									}
+									if (entityTypeList.contains("/film/actor")){
+									name = name +"ACTOR ";
+								    }
+									if (entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member") ){
+										name = name +"BUSINESSPERSON";
+									}
+									name = name +")";
+								}
+								
+								
+								String printname = FlushLeft(58,name);
+								System.out.printf(printname+"|");
+								System.out.println();
+								System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+								
+								
+								//System.out.println("Name: " + person.getName());
 								//birthday
 								person.setBirthday(JsonPath.read(topic,"$.property['/people/person/date_of_birth'].values[0].text").toString());
-								System.out.println("Date of Birth: "+person.getBirthday());
+								//System.out.println("Date of Birth: "+person.getBirthday());
 								//place of birth
 								person.setPlaceofBirth(JsonPath.read(topic,"$.property['/people/person/place_of_birth'].values[0].text").toString());
-								System.out.println("Place of Birth: "+person.getPlaceofBirth());
+								//System.out.println("Place of Birth: "+person.getPlaceofBirth());
 								//death
 								if(JsonPath.read(topic, "$").toString().contains("deceased_person")){
 									String count = JsonPath.read(topic,"$.property['/people/deceased_person/cause_of_death'].count").toString();
@@ -119,42 +149,56 @@ public class Main {
 									}							
 									person.setDeathDate(JsonPath.read(topic,"$.property['/people/deceased_person/date_of_death'].values[0].text").toString());
 									person.setDeathPlace(JsonPath.read(topic,"$.property['/people/deceased_person/place_of_death'].values[0].text").toString());
-									System.out.println("Death: "+person.Death());
+									//System.out.println("Death: "+person.Death());
 								}
 								//siblings
-								String siblings = "";
+								ArrayList<String> siblings = new ArrayList<String>();
+								String[] siblingArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("sibling_s")){
 								String count = JsonPath.read(topic,"$.property['/people/person/sibling_s'].count").toString();
 								double numSiblings = Double.valueOf(count);
 								for(int l=0; l<numSiblings; l++){
 									String sibling = (JsonPath.read(topic,"$.property['/people/person/sibling_s'].values["+l+"].property['/people/sibling_relationship/sibling'].values[0].text").toString());
-									if(l==0){
-										siblings = siblings+sibling;
-									}else{
-										siblings = siblings+", "+sibling;
-									}
+									siblings.add(sibling);
 								}
-								person.setSiblings(siblings);
-								System.out.println("Sibling(s): " + person.getSiblings());
+								siblingArr = new String[siblings.size()]; 
+								for(int l=0; l<siblingArr.length; l++){
+									siblingArr[l] = siblings.get(l);
+								}
+								} else {
+									siblingArr[0] = "";
+								}
+							
+								person.setSiblings(siblingArr);
+								//System.out.println("Sibling(s): " + person.getSiblings());
 								//spouses
-								String spouses = "";
-								count = JsonPath.read(topic,"$.property['/people/person/spouse_s'].count").toString();
-								double numSpouses = Double.valueOf(count);
+								ArrayList<String> spouses = new ArrayList<String>();
+								String[] spouseArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("spouse_s")){
+								String count1 = JsonPath.read(topic,"$.property['/people/person/spouse_s'].count").toString();
+								double numSpouses = Double.valueOf(count1);
 								for(int l=0; l<numSpouses; l++){
 									String spouse = (JsonPath.read(topic,"$.property['/people/person/spouse_s'].values["+l+"].property['/people/marriage/spouse'].values[0].text").toString());
-									if(l==0){
-										spouses = spouses+spouse;
-									}else{
-										spouses = spouses+", "+spouse;
-									}
+									spouses.add(spouse);
 								}
-								person.setSpouses(spouses);
-								System.out.println("Spouse(s): " + person.getSpouses());
+								spouseArr = new String[spouses.size()]; 
+								for(int l=0; l<spouseArr.length; l++){
+									spouseArr[l] = spouses.get(l);
+									
+								}
+								}else{
+									spouseArr[0] = "";
+								}
+								person.setSpouses(spouseArr);
+								//System.out.println("Spouse(s): " + person.getSpouses());
 								//description
 								person.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
-								System.out.println("Description: " + person.getDescription());
+								//System.out.println("Description: " + person.getDescription());
+								person.print();
 							}
+							
 
-							if(entityTypeList.contains("/book/author")){
+							if(entityTypeList.contains("/book/author") && !entityTypeList.contains("/sports/sports_league")){
 								entity = new Author (mid);
 								setAuthorType((Author)entity);
 								Author author = new Author (mid);
@@ -175,7 +219,7 @@ public class Main {
 									bookArr[l] = books.get(l);
 								}
 								author.setBooks(bookArr);
-								System.out.println("Books: "+ author.getBooks());
+								//System.out.println("Books: "+ author.getBooks());
 								//Book about the author
 								ArrayList<String> booksAbout = new ArrayList<String>();
 								count = JsonPath.read(topic,"$.property['/book/book_subject/works'].count").toString();
@@ -192,7 +236,7 @@ public class Main {
 									bookAboutArr[l] = booksAbout.get(l);
 								}
 								author.setBooksAbouttheAuthor(bookAboutArr);
-								System.out.println("Books about: " + author.getBooksAbouttheAuthor());
+								//System.out.println("Books about: " + author.getBooksAbouttheAuthor());
 								//Influenced
 								ArrayList<String> influenced = new ArrayList<String>();
 								count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].count").toString();
@@ -201,6 +245,7 @@ public class Main {
 									numInfluenced=10;
 								}
 								for(int l=0; l<numInfluenced; l++){
+									
 									String influencedPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].values["+l+"].text").toString());
 									influenced.add(influencedPerson);
 								}
@@ -209,10 +254,12 @@ public class Main {
 									influencedArr[l] = influenced.get(l);
 								}
 								author.setInfluenced(influencedArr);
-								System.out.println("Influenced: " + author.getInfluenced());
+								//System.out.println("Influenced: " + author.getInfluenced());
 								//Influenced by
+								ArrayList<String> influencedby = new ArrayList<String>();
+								String[] influencedbyArr = {""};
 								if(JsonPath.read(topic, "$").toString().contains("influenced_by")){
-									ArrayList<String> influencedby = new ArrayList<String>();
+									
 									count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced_by'].count").toString();
 									double numInfluencedBy = Double.valueOf(count);
 									if(numInfluencedBy>10){
@@ -222,42 +269,74 @@ public class Main {
 										String influencedByPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced_by'].values["+l+"].text").toString());
 										influencedby.add(influencedByPerson);
 									}
-									String[] influencedbyArr = new String[influencedby.size()];
+									influencedbyArr = new String[influencedby.size()];
 									for(int l=0; l<influencedbyArr.length; l++){
 										influencedbyArr[l] = influencedby.get(l);
 									}
-									author.setInfluencedby(influencedbyArr);
-									System.out.println("Influenced By: "+author.getInfluencedby());
 								}
-
+								 else{
+									
+									 influencedbyArr[0]= "";
+									}
+									//System.out.println("wtf" +influencedbyArr[0] );
+									author.setInfluencedby(influencedbyArr);
+									//System.out.println("Influenced By: "+author.getInfluencedby());
+								
+								    author.print();
 							}
+									
+								
 
-							if(JsonPath.read(topic, "$").toString().contains("film")){
-									ArrayList<String> films = new ArrayList<String>();
-									ArrayList<String> characters = new ArrayList<String>();
-									String count = JsonPath.read(topic,"$.property['/film/actor/film'].count").toString();
-									double numFilms = Double.valueOf(count);
-									if(numFilms>10){
-										numFilms=10;
+							
+                            //change here from film/actor
+							if(entityTypeList.contains("/film/actor")){
+								entity = new Actor (mid);
+								setActorType((Actor)entity);
+								Actor actor = new Actor (mid);
+								ArrayList<String> films = new ArrayList<String>();
+								ArrayList<String> characters = new ArrayList<String>();
+								String count = JsonPath.read(topic,"$.property['/film/actor/film'].count").toString();
+								double numFilms = Double.valueOf(count);
+								if(numFilms>10){
+									numFilms=10;
+								}
+								for(int l=0; l<numFilms; l++){
+									String film = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/film'].values[0].text").toString());
+									films.add(film);//problem is here 
+									if (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"]").toString().contains("character")){
+											
+									String character = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/character'].values[0].text").toString());
+									characters.add(character);
+									}else {
+										characters.add(" ");
 									}
-									for(int l=0; l<numFilms; l++){
-										String film = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/film'].values[0].text").toString());
-										String character = (JsonPath.read(topic,"$.property['/film/actor/film'].values["+l+"].property['/film/performance/character'].values[0].text").toString());
-										films.add(film);
-										characters.add(character);
-									}
-									String[] filmArr = new String[films.size()];
-									String[] charArr = new String[characters.size()];
-									for(int l=0; l<filmArr.length; l++){
-										filmArr[l] = films.get(l);
-										charArr[l] = characters.get(l);
-									}
-									actor.setFilmsParticipated(charArr, filmArr);
-									System.out.println("Films: "+actor.getFilmsParticipated());
-								}								
-							}  
-
+									/*
+									if(JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"]").toString().contains("role")){
+											String bmRole = (JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].values["+l+"].property['/organization/organization_board_membership/role'].values[0].text").toString());
+											boardRole.add(bmRole);
+										}else{
+											boardRole.add(" ");
+										}
+									
+									
+									*/
+									
+									
+								}
+								String[] filmArr = new String[films.size()];
+								String[] charArr = new String[characters.size()];
+								for(int l=0; l<filmArr.length; l++){
+									filmArr[l] = films.get(l);
+									charArr[l] = characters.get(l);
+								}
+								actor.setFilmsParticipated(charArr, filmArr);
+								//System.out.println("Films: "+actor.getFilmsParticipated());
+								actor.print();
+							}								
+						
+                            //set the properties of businessperson
 							if(entityTypeList.contains("/organization/organization_founder") || entityTypeList.contains("/business/board_member")){
+								
 								entity = new BusinessPerson (mid);
 								setBusinessPersonType((BusinessPerson)entity);
 								BusinessPerson businessperson = new BusinessPerson (mid);
@@ -278,18 +357,26 @@ public class Main {
 										foundedArr[l] = founded.get(l);
 									}
 									businessperson.setFoundedOrganizationName(foundedArr);
-									System.out.println("Founded:");
+									/*System.out.println("Founded:");
 									for(String str : foundedArr){
 										System.out.println(str);
-									}
+									}*/
 								}
 								//leadership
+								
+								String[] leadOrgArr = {""};
+								String[] leadFromArr = {""};
+								String[] leadToArr = {""};
+								
+								String[] leadRoleArr = {""};
+								String[] leadTitleArr = {""};
+								ArrayList<String> leadershipFrom = new ArrayList<String>();
+								ArrayList<String> leadershipTo = new ArrayList<String>();
+								ArrayList<String> leadershipOrganization = new ArrayList<String>();
+								ArrayList<String> leadershipRole = new ArrayList<String>();
+								ArrayList<String> leadershipTitle = new ArrayList<String>();
 								if(JsonPath.read(topic, "$").toString().contains("leader_of")){
-									ArrayList<String> leadershipFrom = new ArrayList<String>();
-									ArrayList<String> leadershipTo = new ArrayList<String>();
-									ArrayList<String> leadershipOrganization = new ArrayList<String>();
-									ArrayList<String> leadershipRole = new ArrayList<String>();
-									ArrayList<String> leadershipTitle = new ArrayList<String>();
+									
 									String count = JsonPath.read(topic,"$.property['/business/board_member/leader_of'].count").toString();
 									double numLeadership = Double.valueOf(count);
 									for(int l=0; l<numLeadership; l++){
@@ -304,11 +391,14 @@ public class Main {
 										String leadTitle = (JsonPath.read(topic,"$.property['/business/board_member/leader_of'].values["+l+"].property['/organization/leadership/title'].values[0].text").toString());
 										leadershipTitle.add(leadTitle);
 									}
-									String[] leadFromArr = new String[leadershipFrom.size()];
-									String[] leadToArr = new String[leadershipTo.size()];
-									String[] leadOrgArr = new String[leadershipOrganization.size()];
-									String[] leadRoleArr = new String[leadershipRole.size()];
-									String[] leadTitleArr = new String[leadershipTitle.size()];
+								
+									leadFromArr = new String[leadershipFrom.size()];
+									leadToArr = new String[leadershipTo.size()];
+									leadOrgArr = new String[leadershipOrganization.size()];
+									
+									
+									leadRoleArr = new String[leadershipRole.size()];
+									leadTitleArr = new String[leadershipTitle.size()];
 									for(int l=0; l<leadFromArr.length; l++){
 										leadFromArr[l] = leadershipFrom.get(l);
 										leadToArr[l] = leadershipTo.get(l);
@@ -316,19 +406,29 @@ public class Main {
 										leadRoleArr[l] = leadershipRole.get(l);
 										leadTitleArr[l] = leadershipTitle.get(l);
 									}
+								}else{
+									leadOrgArr[0] = "";
+								}
 									businessperson.setLeadership(leadFromArr, leadToArr, leadOrgArr, leadRoleArr, leadTitleArr);
-									System.out.println("Leadership:\nOrganization/Role/Title/From-To");
+									/*System.out.println("Leadership:\nOrganization/Role/Title/From-To");
 									for(int l=0; l<leadFromArr.length; l++){
 										System.out.println(leadOrgArr[l]+"/"+leadRoleArr[l]+"/"+leadTitleArr[l]+"/"+leadFromArr[l]+" to "+leadToArr[l]);
-									}
-								}
+									}*/
+								
 								//board member
-								if(JsonPath.read(topic, "$").toString().contains("board_memberships")){
 									ArrayList<String> boardFrom = new ArrayList<String>();
 									ArrayList<String> boardTo = new ArrayList<String>();
 									ArrayList<String> boardOrganization = new ArrayList<String>();
 									ArrayList<String> boardRole = new ArrayList<String>();
 									ArrayList<String> boardTitle = new ArrayList<String>();
+									String[] bmOrgArr = {""};
+									String[] bmFromArr = {""};
+									String[] bmToArr = {""};
+									
+									String[] bmRoleArr = {""};
+									String[] bmTitleArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("board_memberships")){
+									
 									String count = JsonPath.read(topic,"$.property['/business/board_member/organization_board_memberships'].count").toString();
 									double numMemberships = Double.valueOf(count);
 									for(int l=0; l<numMemberships; l++){
@@ -362,11 +462,12 @@ public class Main {
 											boardTitle.add(" ");
 										}
 									}
-									String[] bmFromArr = new String[boardFrom.size()];
-									String[] bmToArr = new String[boardTo.size()];
-									String[] bmOrgArr = new String[boardOrganization.size()];
-									String[] bmRoleArr = new String[boardRole.size()];
-									String[] bmTitleArr = new String[boardTitle.size()];
+								
+									bmFromArr = new String[boardFrom.size()];
+									bmToArr = new String[boardTo.size()];
+									bmOrgArr = new String[boardOrganization.size()];
+									bmRoleArr = new String[boardRole.size()];
+									bmTitleArr = new String[boardTitle.size()];
 									for(int l=0; l<bmFromArr.length; l++){
 										bmFromArr[l] = boardFrom.get(l);
 										bmToArr[l] = boardTo.get(l);
@@ -374,35 +475,51 @@ public class Main {
 										bmRoleArr[l] = boardRole.get(l);
 										bmTitleArr[l] = boardTitle.get(l);
 									}
-									businessperson.setLeadership(bmFromArr, bmToArr, bmOrgArr, bmRoleArr, bmTitleArr);
-									System.out.println("Board Membership:\nOrganization/Role/Title/From-To");
-									for(int l=0; l<bmOrgArr.length; l++){
-										System.out.println(bmOrgArr[l]+"/"+bmRoleArr[l]+"/"+bmTitleArr[l]+"/"+bmFromArr[l]+" to "+bmToArr[l]);
-									}
+								}else {
+									bmOrgArr[0] = "";
 								}
-							}
-
+									businessperson.setBoardMember(bmFromArr, bmToArr, bmOrgArr, bmRoleArr, bmTitleArr);
+									/*System.out.println("Board Membership:\nOrganization/Role/Title/From-To");
+									for(int l=0; l<bmFromArr.length; l++){
+										System.out.println(bmOrgArr[l]+"/"+bmRoleArr[l]+"/"+bmTitleArr[l]+"/"+bmFromArr[l]+" to "+bmToArr[l]);
+									}*/
+								
+                                   businessperson.print();
+							} 
+                            //print sports league
 							if(entityTypeList.contains("/sports/sports_league")){
 								entity = new League (mid);
 								setLeagueType((League)entity);
 								League league = new League (mid);
+								//we print the name of the sports league here;
+								System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+								
+								String namespace = FlushLeft(40,"");
+								System.out.printf( "|" + namespace );
+								    String namebig;
+								    namebig= name +"( LEAGUE )";
+						
+								String printname = FlushLeft(58,namebig);
+								System.out.printf(printname+"|");
+								System.out.println();
+								System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 								//name
 								league.setName(name);
-								System.out.println("Name: " + league.getName());
+								//System.out.println("Name: " + league.getName());
 								//sport
 								league.setSport(JsonPath.read(topic,"$.property['/sports/sports_league/sport'].values[0].text").toString());
-								System.out.println("Sport: "+league.getSport());
+								//System.out.println("Sport: "+league.getSport());
 								//slogan
 								if(JsonPath.read(topic,"$").toString().contains("slogan")){
 									league.setSlogan(JsonPath.read(topic,"$.property['/organization/organization/slogan'].values[0].text").toString());
-									System.out.println("Slogan: "+league.getSlogan());
+									//System.out.println("Slogan: "+league.getSlogan());
 								}
 								//Official website
 								league.setOfficialWebsite(JsonPath.read(topic,"$.property['/common/topic/official_website'].values[0].text").toString());
-								System.out.println("Official website: "+league.getOfficialWebsite());
+								//System.out.println("Official website: "+league.getOfficialWebsite());
 								//championship
 								league.setChampionship(JsonPath.read(topic,"$.property['/sports/sports_league/championship'].values[0].text").toString());
-								System.out.println("Championship: "+league.getChampionship());
+								//System.out.println("Championship: "+league.getChampionship());
 								//teams
 								ArrayList<String> teams = new ArrayList<String>();
 								String count = JsonPath.read(topic,"$.property['/sports/sports_league/teams'].count").toString();
@@ -419,28 +536,41 @@ public class Main {
 									teamsArr[l] = teams.get(l);
 								}
 								league.setTeams(teamsArr);
-								System.out.println("Teams:");
+								/*System.out.println("Teams:");
 								for(String str : teamsArr){
 									System.out.println(str);
-								}
+								}*/
 								//description
 								league.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
-								System.out.println("Description: "+league.getDescription());
+								//System.out.println("Description: "+league.getDescription());
+								league.print();
 							}
 
 							if(entityTypeList.contains("/sports/sports_team") || entityTypeList.contains("/sports/professional_sports_team")){
 								entity = new SportsTeam(mid);
 								setSportsTeamType((SportsTeam)entity);
 								SportsTeam sportsteam = new SportsTeam (mid);
+								//we print the name of sports team here
+                                System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+								
+								String namespace = FlushLeft(40,"");
+								System.out.printf( "|" + namespace );
+								    String namebig;
+								    namebig= name +"( SPORTS TEAM )";
+						
+								String printname = FlushLeft(58,namebig);
+								System.out.printf(printname+"|");
+								System.out.println();
+								System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 								//Name
 								sportsteam.setName(name);
-								System.out.println("Name: " + sportsteam.getName());
+								//System.out.println("Name: " + sportsteam.getName());
 								//Sport
 								sportsteam.setSport(JsonPath.read(topic,"$.property['/sports/sports_team/sport'].values[0].text").toString());
-								System.out.println("Sport: "+sportsteam.getSport());
+								//System.out.println("Sport: "+sportsteam.getSport());
 								//Arena
 								sportsteam.setArena(JsonPath.read(topic,"$.property['/sports/sports_team/arena_stadium'].values[0].text").toString());
-								System.out.println("Arena: "+sportsteam.getArena());
+								//System.out.println("Arena: "+sportsteam.getArena());
 								//Championships
 								ArrayList<String> champs = new ArrayList<String>();
 								String count = JsonPath.read(topic,"$.property['/sports/sports_team/championships'].count").toString();
@@ -457,19 +587,19 @@ public class Main {
 									champsArr[l] = champs.get(l);
 								}
 								sportsteam.setChampionships(champsArr);
-								System.out.println("Championships:");
+								/*System.out.println("Championships:");
 								for(String str : champsArr){
 									System.out.println(str);
-								}
+								}*/
 								//Founded
 								sportsteam.setFounded(JsonPath.read(topic,"$.property['/sports/sports_team/founded'].values[0].text").toString());
-								System.out.println("Founded: "+sportsteam.getFounded());
+								//System.out.println("Founded: "+sportsteam.getFounded());
 								//Leagues
 								sportsteam.setLeagues(JsonPath.read(topic,"$.property['/sports/sports_team/league'].values[0].property['/sports/sports_league_participation/league'].values[0].text").toString());
-								System.out.println("Leagues: "+sportsteam.getLeagues());
+								//System.out.println("Leagues: "+sportsteam.getLeagues());
 								//Location
 								sportsteam.setLocations(JsonPath.read(topic,"$.property['/sports/sports_team/location'].values[0].text").toString());
-								System.out.println("Locations: "+sportsteam.getLocations());
+								//System.out.println("Locations: "+sportsteam.getLocations());
 								//Coaches
 								ArrayList<String> coachFrom = new ArrayList<String>();
 								ArrayList<String> coachTo = new ArrayList<String>();
@@ -522,10 +652,10 @@ public class Main {
 									cnameArr[l] = coachName.get(l);
 								}
 								sportsteam.setCoaches(cnameArr, cposArr, cfromArr, ctoArr);
-								System.out.println("Coaches:\nName/Position/From-To");
+								/*System.out.println("Coaches:\nName/Position/From-To");
 								for(int l=0; l<cnameArr.length; l++){
 									System.out.println(cnameArr[l]+"/"+cposArr[l]+"/"+cfromArr[l]+"-"+ctoArr[l]);
-								}
+								}*/
 								//Player roster
 								ArrayList<String> playerFrom = new ArrayList<String>();
 								ArrayList<String> playerTo = new ArrayList<String>();
@@ -589,14 +719,15 @@ public class Main {
 									nameArr[l] = playerName.get(l);
 								}
 								sportsteam.setPlayersRoster(nameArr, posArr, numArr, fromArr, toArr);
-								System.out.println("PlayersRoster:\nName/Position/Number/From-To");
+								/*System.out.println("PlayersRoster:\nName/Position/Number/From-To");
 								for(int l=0; l<nameArr.length; l++){
 									System.out.println(nameArr[l]+"/"+posArr[l]+"/"+numArr[l]+"/"+fromArr[l]+" to "+toArr[l]);
-								}							
+								}*/							
 								//Description
 								sportsteam.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
-								System.out.println("Description: "+sportsteam.getDescription());
-							}
+								//System.out.println("Description: "+sportsteam.getDescription());
+								sportsteam.print();
+							} 
 							break topicloop;
 						}
 
@@ -606,7 +737,7 @@ public class Main {
 
 
 
-			System.out.println(entityTypeList);
+			//System.out.println(entityTypeList);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -616,27 +747,37 @@ public class Main {
 	}
 	//call different types of entity
 	private static void setPersonType (Person et){
-		System.out.println("Person");
+		//System.out.println("Person");
 	}
 
 	private static void setAuthorType (Author et){
-		System.out.println("Author");
+		//System.out.println("Author");
 	}
 
 	private static void setActorType (Actor et){
-		System.out.println("Actor");
+		//System.out.println("Actor");
 	}
 
 	private static void setBusinessPersonType (BusinessPerson et){
-		System.out.println("BusinessPerson");
+		//System.out.println("BusinessPerson");
 	}
 
 	private static void setLeagueType (League et){
-		System.out.println("League");
+		//System.out.println("League");
 	}
 
 	private static void setSportsTeamType (SportsTeam et){
-		System.out.println("SportsTeam");
+		//System.out.println("SportsTeam");
 	}
-
+	public static String FlushLeft(int length, String string)   
+    {   
+        String str = string;   
+        String c = " ";
+        if (string.length() > length)   
+            str = string;   
+        else  
+            for (int i = 0; i < length - string.length(); i++)      
+        str = str + c;   
+        return str;   
+    } 
 }
