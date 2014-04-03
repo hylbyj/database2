@@ -14,15 +14,15 @@ import java.util.ArrayList;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public void main(String QUERY, String KEY) {
 
 		try {
 			Entity entity = null;
 			//query (will eventually be from parameters)
 			String query = null;
 			String accountKey = null;
-			query = "Jackson";
-			accountKey = "AIzaSyCIQ8gDGEMgxJpSsGK6BwkfLZXtN4MTf4E";
+			query = QUERY;
+			accountKey = KEY;
 
 
 			//load and read content in search API results

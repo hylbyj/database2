@@ -16,14 +16,16 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 public class part2 {
-	public static void main(String[] args) {
+	public boolean op3 = false;
+	public void main(String Question,String key) {
 		try {
 
 			//come from parameters
 			String accountKey = "AIzaSyCIQ8gDGEMgxJpSsGK6BwkfLZXtN4MTf4E";
-			String search = "Romeo and Juliet";
+			String search = Question;
 			
 			//print the question for option3
+			if (op3){
 			System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 			
 			String namespace = FlushLeft(30,"");
@@ -34,7 +36,7 @@ public class part2 {
 			System.out.printf(printname+"|");
 			System.out.println();
 			System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-			
+			}
 
 			HttpTransport httpTransport = new NetHttpTransport();
 			HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
@@ -86,7 +88,9 @@ public class part2 {
 					creationbook[l] = creations.get(l);
 				}
 				resultList.put(name, name+" (as "+type+") created "+creationStr);
+				if (op3){
 				printoption3(name,type,creationbook);
+				}
 			}
 
 			//query for organization
@@ -135,17 +139,17 @@ public class part2 {
 					creationauthor[l] = creations.get(l);
 				}
 				
-				printoption3(name,type,creationauthor);
+				if (op3) {printoption3(name,type,creationauthor);}
 				resultList.put(name, name+" (as "+type+") created "+creationStr);
 			}
 
-			//print out results
+			if (!op3){
 			int i = 0;
 			for(Entry<String, String> entry : resultList.entrySet()){
 				i = i +1;
 				System.out.println(i+". "+entry.getValue());
 			}
-			
+			}
 			
 			
 

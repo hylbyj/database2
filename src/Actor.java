@@ -44,7 +44,7 @@ public class Actor extends Entity{
 	     System.out.printf("|" + Rowname0);
 	     String Rowname01 = FlushLeft(40,"Character");
 	     System.out.printf("|" + Rowname01);   
-	     String Rowname02 = FlushLeft(37,"Film Name");
+	     String Rowname02 = FlushLeft(36,"Film Name");
 	     System.out.printf("|"+Rowname02 + "|" );  
 	     System.out.println();
 	     String Rowname03 = FlushLeft(20,"");
@@ -56,7 +56,7 @@ public class Actor extends Entity{
 	            System.out.printf("|" + Rowname1);
 	            String character = FlushLeft(40,Character[leng]);
 	            System.out.printf("|"+character);
-	            String filmname = FlushLeft(37,FilmName[leng]);
+	            String filmname = FlushLeft(36,FilmName[leng]);
 	            System.out.printf("|"+filmname + "|" );
 	            System.out.println();
 	            
