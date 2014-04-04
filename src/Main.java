@@ -48,6 +48,10 @@ public class Main {
 				midList.add(JsonPath.read(result,"$.mid").toString());
 				nameList.add(JsonPath.read(result,"$.name").toString());
 			}
+			
+			if (midList.isEmpty()){
+				System.out.println("Nothing related found in the freebase");
+			}
 			//list of names for mid results
 
 			//System.out.println(midList);
@@ -133,12 +137,15 @@ public class Main {
 								
 								//System.out.println("Name: " + person.getName());
 								//birthday
+								if(JsonPath.read(topic, "$").toString().contains("date_of_birth")){
 								person.setBirthday(JsonPath.read(topic,"$.property['/people/person/date_of_birth'].values[0].text").toString());
-								//System.out.println("Date of Birth: "+person.getBirthday());
+								}//System.out.println("Date of Birth: "+person.getBirthday());
 								//place of birth
+								if(JsonPath.read(topic, "$").toString().contains("place_of_birth")){
 								person.setPlaceofBirth(JsonPath.read(topic,"$.property['/people/person/place_of_birth'].values[0].text").toString());
 								//System.out.println("Place of Birth: "+person.getPlaceofBirth());
 								//death
+								}
 								if(JsonPath.read(topic, "$").toString().contains("deceased_person")){
 									String count = JsonPath.read(topic,"$.property['/people/deceased_person/cause_of_death'].count").toString();
 									double numCount = Double.valueOf(count);
@@ -192,8 +199,9 @@ public class Main {
 								person.setSpouses(spouseArr);
 								//System.out.println("Spouse(s): " + person.getSpouses());
 								//description
+								if (JsonPath.read(topic, "$").toString().contains("description")){
 								person.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
-								//System.out.println("Description: " + person.getDescription());
+								}//System.out.println("Description: " + person.getDescription());
 								person.print();
 							}
 							
@@ -221,7 +229,10 @@ public class Main {
 								author.setBooks(bookArr);
 								//System.out.println("Books: "+ author.getBooks());
 								//Book about the author
+								
 								ArrayList<String> booksAbout = new ArrayList<String>();
+								String[] bookAboutArr = {""};
+								if (JsonPath.read(topic, "$").toString().contains("book_subject")){
 								count = JsonPath.read(topic,"$.property['/book/book_subject/works'].count").toString();
 								double numBooksAbout = Double.valueOf(count);
 								if(numBooksAbout>10){
@@ -231,14 +242,20 @@ public class Main {
 									String book = (JsonPath.read(topic,"$.property['/book/book_subject/works'].values["+l+"].text").toString());
 									booksAbout.add(book);
 								}
-								String[] bookAboutArr = new String[booksAbout.size()];
+								bookAboutArr = new String[booksAbout.size()]; 
 								for(int l=0; l<bookAboutArr.length; l++){
 									bookAboutArr[l] = booksAbout.get(l);
 								}
+								}else{
+									bookAboutArr[0] = "";
+								}
+								
 								author.setBooksAbouttheAuthor(bookAboutArr);
 								//System.out.println("Books about: " + author.getBooksAbouttheAuthor());
 								//Influenced
 								ArrayList<String> influenced = new ArrayList<String>();
+								String[] influencedArr = {""};
+								if (JsonPath.read(topic, "$").toString().contains("influenced")){
 								count = JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].count").toString();
 								double numInfluenced = Double.valueOf(count);
 								if(numInfluenced>10){
@@ -249,9 +266,12 @@ public class Main {
 									String influencedPerson = (JsonPath.read(topic,"$.property['/influence/influence_node/influenced'].values["+l+"].text").toString());
 									influenced.add(influencedPerson);
 								}
-								String[] influencedArr = new String[influenced.size()];
+								influencedArr = new String[influenced.size()];
 								for(int l=0; l<influencedArr.length; l++){
 									influencedArr[l] = influenced.get(l);
+								}
+								} else {
+									influencedArr[0] = "";
 								}
 								author.setInfluenced(influencedArr);
 								//System.out.println("Influenced: " + author.getInfluenced());
@@ -507,7 +527,9 @@ public class Main {
 								league.setName(name);
 								//System.out.println("Name: " + league.getName());
 								//sport
+								
 								league.setSport(JsonPath.read(topic,"$.property['/sports/sports_league/sport'].values[0].text").toString());
+								
 								//System.out.println("Sport: "+league.getSport());
 								//slogan
 								if(JsonPath.read(topic,"$").toString().contains("slogan")){
@@ -515,13 +537,19 @@ public class Main {
 									//System.out.println("Slogan: "+league.getSlogan());
 								}
 								//Official website
+								if(JsonPath.read(topic,"$").toString().contains("official_website")){
 								league.setOfficialWebsite(JsonPath.read(topic,"$.property['/common/topic/official_website'].values[0].text").toString());
+								}
 								//System.out.println("Official website: "+league.getOfficialWebsite());
 								//championship
+								if(JsonPath.read(topic,"$").toString().contains("championship")){
 								league.setChampionship(JsonPath.read(topic,"$.property['/sports/sports_league/championship'].values[0].text").toString());
+								}
 								//System.out.println("Championship: "+league.getChampionship());
 								//teams
 								ArrayList<String> teams = new ArrayList<String>();
+								String[] teamsArr = {""};
+								if (JsonPath.read(topic, "$").toString().contains("/sports/sports_league/teams")){
 								String count = JsonPath.read(topic,"$.property['/sports/sports_league/teams'].count").toString();
 								double numTeams = Double.valueOf(count);
 								if(numTeams>10){
@@ -531,9 +559,12 @@ public class Main {
 									String team = (JsonPath.read(topic,"$.property['/sports/sports_league/teams'].values["+l+"].property['/sports/sports_league_participation/team'].values[0].text").toString());
 									teams.add(team);
 								}
-								String[] teamsArr = new String[teams.size()];
+								teamsArr = new String[teams.size()];
 								for(int l=0; l<teamsArr.length; l++){
 									teamsArr[l] = teams.get(l);
+								}
+								}else {
+									teamsArr[0] = ""; 
 								}
 								league.setTeams(teamsArr);
 								/*System.out.println("Teams:");
@@ -541,8 +572,10 @@ public class Main {
 									System.out.println(str);
 								}*/
 								//description
+								if(JsonPath.read(topic,"$").toString().contains("description")){
 								league.setDescription(JsonPath.read(topic,"$.property['/common/topic/description'].values[0].value").toString());
 								//System.out.println("Description: "+league.getDescription());
+								}
 								league.print();
 							}
 
@@ -569,10 +602,15 @@ public class Main {
 								sportsteam.setSport(JsonPath.read(topic,"$.property['/sports/sports_team/sport'].values[0].text").toString());
 								//System.out.println("Sport: "+sportsteam.getSport());
 								//Arena
+								if(JsonPath.read(topic,"$").toString().contains("arena_stadium")){
 								sportsteam.setArena(JsonPath.read(topic,"$.property['/sports/sports_team/arena_stadium'].values[0].text").toString());
+								}
 								//System.out.println("Arena: "+sportsteam.getArena());
 								//Championships
+								
 								ArrayList<String> champs = new ArrayList<String>();
+								String[] champsArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("championships")){
 								String count = JsonPath.read(topic,"$.property['/sports/sports_team/championships'].count").toString();
 								double numChamps = Double.valueOf(count);
 								if(numChamps>10){
@@ -582,9 +620,12 @@ public class Main {
 									String champ = (JsonPath.read(topic,"$.property['/sports/sports_team/championships'].values["+l+"].text").toString());
 									champs.add(champ);
 								}
-								String[] champsArr = new String[champs.size()];
+								champsArr = new String[champs.size()];
 								for(int l=0; l<champsArr.length; l++){
 									champsArr[l] = champs.get(l);
+								}
+								}else{
+									champsArr[0] = "";
 								}
 								sportsteam.setChampionships(champsArr);
 								/*System.out.println("Championships:");
@@ -592,20 +633,31 @@ public class Main {
 									System.out.println(str);
 								}*/
 								//Founded
+								if(JsonPath.read(topic, "$").toString().contains("founded")){
 								sportsteam.setFounded(JsonPath.read(topic,"$.property['/sports/sports_team/founded'].values[0].text").toString());
+								}
 								//System.out.println("Founded: "+sportsteam.getFounded());
 								//Leagues
+								if(JsonPath.read(topic, "$").toString().contains("league")){
 								sportsteam.setLeagues(JsonPath.read(topic,"$.property['/sports/sports_team/league'].values[0].property['/sports/sports_league_participation/league'].values[0].text").toString());
+								}
 								//System.out.println("Leagues: "+sportsteam.getLeagues());
 								//Location
+								if(JsonPath.read(topic, "$").toString().contains("location")){
 								sportsteam.setLocations(JsonPath.read(topic,"$.property['/sports/sports_team/location'].values[0].text").toString());
+								}
 								//System.out.println("Locations: "+sportsteam.getLocations());
 								//Coaches
 								ArrayList<String> coachFrom = new ArrayList<String>();
 								ArrayList<String> coachTo = new ArrayList<String>();
 								ArrayList<String> coachName = new ArrayList<String>();
 								ArrayList<String> coachPos = new ArrayList<String>();
-								count = JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].count").toString();
+								String[] cfromArr = {""};
+								String[] ctoArr = {""};
+								String[] cposArr = {""};
+								String[] cnameArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("coaches")){
+								String count = JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].count").toString();
 								double numCoaches = Double.valueOf(count);
 								for(int l=0; l<numCoaches; l++){
 									if(JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"]").toString().contains("from")){
@@ -641,15 +693,18 @@ public class Main {
 									String coName = (JsonPath.read(topic,"$.property['/sports/sports_team/coaches'].values["+l+"].property['/sports/sports_team_coach_tenure/coach'].values[0].text").toString());
 									coachName.add(coName);
 								}
-								String[] cfromArr = new String[coachFrom.size()];
-								String[] ctoArr = new String[coachTo.size()];
-								String[] cposArr = new String[coachPos.size()];
-								String[] cnameArr = new String[coachName.size()];
+								cfromArr = new String[coachFrom.size()];
+								ctoArr = new String[coachTo.size()];
+								cposArr = new String[coachPos.size()];
+								cnameArr = new String[coachName.size()];
 								for(int l=0; l<cfromArr.length; l++){
 									cfromArr[l] = coachFrom.get(l);
 									ctoArr[l] = coachTo.get(l);
 									cposArr[l] = coachPos.get(l);
 									cnameArr[l] = coachName.get(l);
+								}
+								}else{
+									cnameArr[0] = "";
 								}
 								sportsteam.setCoaches(cnameArr, cposArr, cfromArr, ctoArr);
 								/*System.out.println("Coaches:\nName/Position/From-To");
@@ -662,7 +717,14 @@ public class Main {
 								ArrayList<String> playerName = new ArrayList<String>();
 								ArrayList<String> playerPos = new ArrayList<String>();
 								ArrayList<String> playerNum = new ArrayList<String>();
-								count = JsonPath.read(topic,"$.property['/sports/sports_team/roster'].count").toString();
+								
+								String[] fromArr = {""};
+								String[] toArr = {""};
+								String[] numArr = {""};
+								String[] posArr = {""};
+								String[] nameArr = {""};
+								if(JsonPath.read(topic, "$").toString().contains("/sports/sports_team/roster")){
+								String count = JsonPath.read(topic,"$.property['/sports/sports_team/roster'].count").toString();
 								double numPlayers = Double.valueOf(count);
 								if(numPlayers>10){
 									numPlayers=10;
@@ -706,17 +768,20 @@ public class Main {
 									String playName = (JsonPath.read(topic,"$.property['/sports/sports_team/roster'].values["+l+"].property['/sports/sports_team_roster/player'].values[0].text").toString());
 									playerName.add(playName);
 								}
-								String[] fromArr = new String[playerFrom.size()];
-								String[] toArr = new String[playerTo.size()];
-								String[] numArr = new String[playerNum.size()];
-								String[] posArr = new String[playerPos.size()];
-								String[] nameArr = new String[playerName.size()];
+								fromArr = new String[playerFrom.size()];
+								toArr = new String[playerTo.size()];
+								numArr = new String[playerNum.size()];
+								posArr = new String[playerPos.size()];
+								nameArr = new String[playerName.size()];
 								for(int l=0; l<fromArr.length; l++){
 									fromArr[l] = playerFrom.get(l);
 									toArr[l] = playerTo.get(l);
 									numArr[l] = playerNum.get(l);
 									posArr[l] = playerPos.get(l);
 									nameArr[l] = playerName.get(l);
+								}
+								}else{
+									nameArr[0] = "";
 								}
 								sportsteam.setPlayersRoster(nameArr, posArr, numArr, fromArr, toArr);
 								/*System.out.println("PlayersRoster:\nName/Position/Number/From-To");
@@ -734,7 +799,9 @@ public class Main {
 					}
 				}
 
-
+              if (entityTypeList.isEmpty()){
+            	  System.out.println("Nothing related found in the Freebase");
+              }
 
 
 			//System.out.println(entityTypeList);

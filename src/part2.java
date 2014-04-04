@@ -30,7 +30,7 @@ public class part2 {
 			
 			String namespace = FlushLeft(30,"");
 			System.out.printf( "|" + namespace );
-			String question = "Who craeted " + search + "?";
+			String question = "Who created " + search + "?";
 			
 			String printname = FlushLeft(68,question);
 			System.out.printf(printname+"|");
@@ -148,6 +148,9 @@ public class part2 {
 			for(Entry<String, String> entry : resultList.entrySet()){
 				i = i +1;
 				System.out.println(i+". "+entry.getValue());
+			}
+			if (resultList.isEmpty()){
+				System.out.println("Nothing related found in the freebase");
 			}
 			}
 			

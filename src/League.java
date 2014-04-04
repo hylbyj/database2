@@ -80,12 +80,14 @@ public class League extends Entity{
         System.out.println();
         System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 				 //print sport
+        if (Sport != null){
 		        String Rowname1 = FlushLeft(20,"Sport:");
 		        System.out.printf( "|" + Rowname1);
 		        String sport = FlushLeft(78,Sport);
 		        System.out.printf(sport+"|");
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+        }
 		        //slogan
 		        if (Slogan!= null){
 		        String Rowname2 = FlushLeft(20,"Slogan:");
@@ -95,22 +97,25 @@ public class League extends Entity{
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 		        }//website
+		        if (OfficialWebsite!=null){
 		        String Rowname3 = FlushLeft(20,"Official Website:");
 		        System.out.printf("|" + Rowname3);
 		        String website = FlushLeft(78,OfficialWebsite);
 		        System.out.printf(website+"|");
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+		        }
 		        //championship
+		        if (Championship != null) {
 		        String Rowname4 = FlushLeft(20,"Championship:");
 		        System.out.printf("|" + Rowname4);
 		        String champion = FlushLeft(78,Championship);
 		        System.out.printf(champion+"|");
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-		        
+		        }
 		      //print teams
-		        if (!(Teams[0]== null)){
+		        if (!(Teams[0]== "")){
 		        String Rowname5 = FlushLeft(20,"Teams:");
 		        System.out.printf("|" + Rowname5);
 		        for (int leng2 = 0;leng2< Teams.length;leng2++){
@@ -128,6 +133,7 @@ public class League extends Entity{
 		       
 		        
 		        //print description
+		        if (Description !=null){
 		        String Rowname6 = FlushLeft(20,"Description:");
 		        System.out.printf("|" + Rowname6);
 		        int leng = this.getDescription().length();
@@ -145,7 +151,7 @@ public class League extends Entity{
 		        System.out.printf(space + "|");
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-				
+		        }
 		      
 			
 			

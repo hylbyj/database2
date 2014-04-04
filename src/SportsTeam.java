@@ -126,13 +126,16 @@ public class SportsTeam extends Entity{
 		        System.out.println();
 		        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 						 //print sport
+		        if (Sport != null){
 				        String Rowname1 = FlushLeft(20,"Sport:");
 				        System.out.printf( "|" + Rowname1);
 				        String sport = FlushLeft(78,Sport);
 				        System.out.printf(sport+"|");
 				        System.out.println();
 				        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-				        //arena
+		        }
+		        //arena
+		        if (Arena != null){
 				        String Rowname2 = FlushLeft(20,"Arena:");
 				        System.out.printf("|" + Rowname2);
 				        String arena = FlushLeft(78,Arena);
@@ -155,7 +158,8 @@ public class SportsTeam extends Entity{
 					        System.out.println();
 					        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 					        }
-				        
+		        }
+		        if (Founded != null){
 				        //Founded
 				        String Rowname3 = FlushLeft(20,"Founded");
 				        System.out.printf("|" + Rowname3);
@@ -163,20 +167,26 @@ public class SportsTeam extends Entity{
 				        System.out.printf(founded+"|");
 				        System.out.println();
 				        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-				        //Leagues
+				        
+		        }//Leagues
+		        if (Leagues != null){
 				        String Rowname7 = FlushLeft(20,"Leagues");
 				        System.out.printf("|" + Rowname7);
 				        String leagues = FlushLeft(78,Leagues);
 				        System.out.printf(leagues+"|");
 				        System.out.println();
 				        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-				        //locations
+		        }    
+		        //locations
+		        if (Locations != null){
 				        String Rowname8 = FlushLeft(20,"Locations");
 				        System.out.printf("|" + Rowname8);
 				        String location = FlushLeft(78,Locations);
 				        System.out.printf(location+"|");
 				        System.out.println();
 				        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+		        }
+		        if (CoachesName[0]!= ""){
 				        //coaches
 				         String Rowname00 = FlushLeft(20,"Coaches");
 					     System.out.printf("|" + Rowname00);
@@ -206,7 +216,9 @@ public class SportsTeam extends Entity{
 					            System.out.printf("|"  +fromto + "|" );
 					            System.out.println();
 					            System.out.println(" "+"---------------------------------------------------------------------------------------------------");       
-				        //playroaster
+				        
+					     }//playroaster
+					     if (PlayersRosterName[0] != ""){
 					            String Rowname60 = FlushLeft(20,"PlayRoster:");
 					   	     System.out.printf("|" + Rowname60);
 					   	     String Rowname61 = FlushLeft(21,"Name");
@@ -238,8 +250,9 @@ public class SportsTeam extends Entity{
 					   	            System.out.println();
 					   	            
 					   	        }   
+					     
 					   	     System.out.println(" "+"---------------------------------------------------------------------------------------------------");
-					   	
+					     }
 				        
 				        
 				        
@@ -247,6 +260,7 @@ public class SportsTeam extends Entity{
 				      
 				        
 				        //print description
+					   	     if (Description != null){
 				        String Rowname6 = FlushLeft(20,"Description:");
 				        System.out.printf("|" + Rowname6);
 				        int leng0 = this.getDescription().length();
@@ -264,7 +278,7 @@ public class SportsTeam extends Entity{
 				        System.out.printf(space + "|");
 				        System.out.println();
 				        System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-						
+					   	     }
 				      
 					
 					

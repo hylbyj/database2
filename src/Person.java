@@ -110,6 +110,7 @@ public class Person extends Entity {
 	}
 	//print the info box we need
 	public void print(){
+		String space = FlushLeft(78,"");
 		//print name
 		/*System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 		
@@ -127,19 +128,23 @@ public class Person extends Entity {
         System.out.println();
         System.out.println(" "+"--------------------------------------------------------------------------------------------------");
 		 //print birthday
+        if (Birthday!= null){
         String Rowname1 = FlushLeft(20,"Date of Birth:");
         System.out.printf( "|" + Rowname1);
         String Bday = FlushLeft(78,this.getBirthday());
         System.out.printf(Bday+"|");
         System.out.println();
         System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+        }
         //print birth place
+        if (Place_of_Birth != null){
         String Rowname2 = FlushLeft(20,"Place of Birth:");
         System.out.printf("|" + Rowname2);
         String Bplace = FlushLeft(78,this.getPlaceofBirth());
         System.out.printf(Bplace+"|");
         System.out.println();
         System.out.println(" "+"--------------------------------------------------------------------------------------------------");
+        }
         //print death
         if (!(Death_Date == null)){
         	String Rowname21 = FlushLeft(20,"Death:");
@@ -151,6 +156,7 @@ public class Person extends Entity {
         }
         
         //print description
+        if (Description!=null){
         String Rowname3 = FlushLeft(20,"Description:");
         System.out.printf("|" + Rowname3);
         int leng = this.getDescription().length();
@@ -164,11 +170,12 @@ public class Person extends Entity {
             System.out.printf("|" + Rowname4);
         }
         }
-        String space = FlushLeft(78,"");
+        
         System.out.printf(space + "|");
         System.out.println();
         System.out.println(" "+"--------------------------------------------------------------------------------------------------");
-		//print siblings
+        }
+        //print siblings
         if (!(Siblings[0]== "")){
         String Rowname5 = FlushLeft(20,"Siblings:");
         System.out.printf("|" + Rowname5);
